@@ -38,6 +38,18 @@ Robots are processed sequentially, sharing scents across the simulation. For eac
 
 The submission is a runnable program with unit tests and documented setup and technical choices. A user interface, web application, database, and deployment pipeline are outside the scope of the exercise.
 
+## Development setup
+
+Install the .NET 10 SDK and open `src/TDL.MartianRobots.slnx` in your IDE.
+
+From the repository root, build the solution with:
+
+```shell
+dotnet build src/TDL.MartianRobots.slnx
+```
+
+The solution currently contains an empty `TDL.MartianRobots.Application` class library targeting .NET 10. CLI and test projects will be added as implementation progresses.
+
 ## Delivery plan
 
 Development and testing conventions are defined in [AGENTS.md](AGENTS.md).

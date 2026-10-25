@@ -18,6 +18,7 @@
 ## Technology and architecture
 
 - Use C# and .NET.
+- Prefix the solution and all project names with `TDL.`.
 - Keep domain concepts, business rules, and simulation orchestration in an application class library. Apply domain-driven design through consistent domain language and encapsulated business rules.
 - Keep the CLI in a separate project referencing the application project. The application must not reference the CLI or use console APIs.
 - The CLI owns console input, output formatting, error rendering, and process exit behaviour. Keep simulation rules out of it.
@@ -43,7 +44,7 @@
 
 ## Verification
 
-- Once the solution exists, build it with `dotnet build` and run tests with `dotnet test` from the repository root.
+- From the repository root, build with `dotnet build src/TDL.MartianRobots.slnx` and, once test projects exist, run tests with `dotnet test src/TDL.MartianRobots.slnx`.
 - Confirm the affected tests and the full test suite pass before completing an implementation change.
 - Report checks performed and any checks that could not run. Do not claim verification that was not performed.
 - Update setup and execution instructions when tooling or application entry points are introduced.
