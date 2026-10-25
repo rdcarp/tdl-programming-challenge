@@ -27,12 +27,20 @@ Robots are processed sequentially, sharing scents across the simulation. For eac
 
 1. **Invalid input:** As the brief does not define this behaviour, any input outside the defined constraints immediately stops processing and raises an exception.
 2. **Validation before simulation:** Validate all input before simulation begins to prevent partial results being output for invalid input.
+3. **C# and .NET:** Use my most experienced stack so the limited exercise time can be spent on solving the problem and demonstrating the approach.
+4. **Domain-driven design:** Keep domain concepts, business rules, and simulation orchestration in an application class library, separate from the CLI. Use domain language and encapsulate rules in the model, keeping the design proportionate to the exercise.
+5. **CLI boundary:** The CLI references the application project and handles console input, output formatting, and error rendering. The application must not depend on the CLI or console APIs.
+6. **Test-driven development:** Develop application functionality through red-green-refactor: write a failing behaviour test, implement enough to pass, then refactor with tests passing.
+7. **Testing tools:** Use xUnit, Shouldly assertions, and NSubstitute for test doubles where dependencies need substitution. These are familiar tools that minimise overhead within the exercise's time limit.
+8. **Test structure:** Organise tests into Given / When / Then sections, with each test checking one focused behaviour and using only the assertions necessary to establish it.
 
 ### Scope
 
 The submission is a runnable program with unit tests and documented setup and technical choices. A user interface, web application, database, and deployment pipeline are outside the scope of the exercise.
 
 ## Delivery plan
+
+Development and testing conventions are defined in [AGENTS.md](AGENTS.md).
 
 Start with a runnable journey using hard-coded structured data and expand its behaviour in tested slices. Slices 1-4 require no input parsing; text input is introduced in slice 5, followed by complete validation coverage.
 
