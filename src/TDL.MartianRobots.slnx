@@ -1,3 +1,8 @@
 <Solution>
+  <Folder Name="/Tests/">
+    <Project Path="TDL.MartianRobots.Application.Tests/TDL.MartianRobots.Application.Tests.csproj" />
+    <Project Path="TDL.MartianRobots.Cli.Tests/TDL.MartianRobots.Cli.Tests.csproj" />
+  </Folder>
   <Project Path="TDL.MartianRobots.Application/TDL.MartianRobots.Application.csproj" />
+  <Project Path="TDL.MartianRobots.Cli/TDL.MartianRobots.Cli.csproj" />
 </Solution>
