@@ -2,5 +2,8 @@ namespace TDL.MartianRobots.Application.Domain;
 
 public enum Orientation
 {
-    North
+    North,
+    East,
+    South,
+    West
 }
