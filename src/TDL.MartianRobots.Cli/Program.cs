@@ -1,20 +1,24 @@
 using TDL.MartianRobots.Application.Domain;
 using TDL.MartianRobots.Cli.Extensions;
 
-
-var startingPose = new Pose(new Position(1, 1), Orientation.East);
-
+var grid = new Grid(new Position(5, 3));
+var startingPose = new Pose(new Position(3, 2), Orientation.North);
 var robot = new Robot(startingPose);
 var report = robot.Simulate(
 [
-    RobotCommand.Right, 
     RobotCommand.Forward,
     RobotCommand.Right,
-    RobotCommand.Forward,
     RobotCommand.Right,
     RobotCommand.Forward,
+    RobotCommand.Left,
+    RobotCommand.Left,
+    RobotCommand.Forward,
+    RobotCommand.Forward,
     RobotCommand.Right,
-    RobotCommand.Forward
-]);
+    RobotCommand.Right,
+    RobotCommand.Forward,
+    RobotCommand.Left,
+    RobotCommand.Left
+], grid);
 
-Console.WriteLine(report.EndPose.ToDisplayString());
+Console.WriteLine(report.ToDisplayString());

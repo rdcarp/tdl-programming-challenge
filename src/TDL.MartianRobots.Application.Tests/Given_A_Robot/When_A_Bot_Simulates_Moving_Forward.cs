@@ -16,7 +16,7 @@ public class When_A_Bot_Simulates_Moving_Forward
         var sut = new Robot(new Pose(new Position(2, 2), orientation));
 
         // Act
-        var report = sut.Simulate([RobotCommand.Forward]);
+        var report = sut.Simulate([RobotCommand.Forward], new Grid(new Position(5, 3)));
 
         // Assert
         report.EndPose.Position.ShouldBe(new Position(expectedX, expectedY));
@@ -33,7 +33,7 @@ public class When_A_Bot_Simulates_Moving_Forward
         var sut = new Robot(new Pose(new Position(2, 2), orientation));
 
         // Act
-        var report = sut.Simulate([RobotCommand.Forward]);
+        var report = sut.Simulate([RobotCommand.Forward], new Grid(new Position(5, 3)));
 
         // Assert
         report.EndPose.Orientation.ShouldBe(orientation);
