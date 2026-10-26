@@ -48,6 +48,7 @@
 - Keep state changes explicit and enforce domain invariants within the application.
 - Nullable checking is enabled centrally in `Directory.Build.props`, with nullable warnings treated as build errors. Use `?` for types that intentionally allow null and handle nullable values before dereferencing them. Fix nullable diagnostics rather than suppressing them or using the null-forgiving operator to bypass checking.
 - Prefer straightforward code and only add dependencies that serve a concrete requirement.
+- Keep movement and turning rules in `Robot`; `Pose` is an immutable description of position and orientation. Test these rules through `Robot.Simulate`.
 
 ## Verification
 

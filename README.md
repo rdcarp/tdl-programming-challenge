@@ -61,11 +61,13 @@ dotnet test src/TDL.MartianRobots.slnx
 dotnet run --project src/TDL.MartianRobots.Cli
 ```
 
-Slice 1 currently supports safe northward forward movement only, using hard-coded structured data, and the CLI prints `1 3 N`. Models assume valid data and perform no runtime validation. Command handling assumes forward movement facing north. Text parsing, validation, turns, other orientations, loss, and scents remain for later slices.
+Slice 2 supports all four starting orientations and left, right, and forward commands using hard-coded structured data. The CLI runs the first sample journey: starting at `1 1 E`, it executes `RFRFRFRF` and prints `1 1 E`. Turns change orientation without changing position; forward moves one grid point in the current direction. Each simulation starts from the robot's original pose.
+
+Models assume valid data and perform no runtime validation. Grid bounds, loss, scents, text parsing, and validation remain for later slices.
 
 ### AI usage
 
-AI assisted with planning, documentation, project setup, and the first slice's implementation and tests. The developer selected the technology, architecture, and delivery order. Verification included observing the initial 15 failing tests, then passing them after implementation; human review and merging remain required.
+AI assisted with planning, documentation, project setup, and the first two slices' implementation and tests. The developer selected the technology, architecture, and delivery order. Slice 2 verification included observing failing direction, turn, and sample-journey tests before implementation, then passing all 35 tests and checking the CLI output `1 1 E`. Human review and merging remain required.
 
 ## Delivery plan
 
