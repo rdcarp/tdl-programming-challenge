@@ -18,7 +18,7 @@ public class When_A_Bot_Simulates_The_First_Sample_Journey
     public void Then_Returns_To_The_Starting_Pose()
     {
         // Act
-        var report = _sut.Simulate(_commands);
+        var report = _sut.Simulate(_commands, new Grid(new Position(5, 3)));
 
         // Assert
         report.EndPose.ShouldBe(new Pose(new Position(1, 1), Orientation.East));

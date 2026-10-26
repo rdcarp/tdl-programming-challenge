@@ -2,21 +2,28 @@ namespace TDL.MartianRobots.Application.Domain;
 
 public sealed class Robot(Pose startingPose)
 {
-    public SimulationReport Simulate(IEnumerable<RobotCommand> commands)
+    public SimulationReport Simulate(IEnumerable<RobotCommand> commands, Grid grid)
     {
         var pose = startingPose;
         foreach (var command in commands)
         {
-            pose = command switch
+            var nextPose = command switch
             {
                 RobotCommand.Forward => pose with { Position = MoveForward(pose) },
                 RobotCommand.Left => pose with { Orientation = TurnLeft(pose.Orientation) },
                 RobotCommand.Right => pose with { Orientation = TurnRight(pose.Orientation) },
                 _ => pose
             };
+
+            if (!grid.Contains(nextPose.Position))
+            {
+                return new SimulationReport(pose, true);
+            }
+
+            pose = nextPose;
         }
 
-        return new SimulationReport(pose);
+        return new SimulationReport(pose, false);
     }
 
     private static Position MoveForward(Pose pose) => pose.Orientation switch

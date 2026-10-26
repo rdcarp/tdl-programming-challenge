@@ -33,10 +33,12 @@ Robots are processed sequentially, sharing scents across the simulation. For eac
 6. **Test-driven development:** Develop application functionality through red-green-refactor: write a failing behaviour test, implement enough to pass, then refactor with tests passing.
 7. **Testing tools:** Use xUnit, Shouldly assertions, and NSubstitute for test doubles where dependencies need substitution. These are familiar tools that minimise overhead within the exercise's time limit.
 8. **Test structure:** Use `Given_A_{SUT}/When_{Specific_Action}.cs` with a matching class name and `Then_{Expected_Assertion}` methods, capitalising each word and separating words with underscores. Use Arrange / Act / Assert; shared setup may live in the constructor with an `_sut` field, while each test performs its own action and checks one focused outcome with minimal assertions.
-9. **Domain model:** In robotics, a position and orientation together form a **pose**. `Position` and `Pose` are immutable value objects. A `Robot` is constructed with its starting pose; `Simulate(commands)` returns an immutable `SimulationReport` with its `EndPose`. Journey state is local to each call; repeating a simulation starts from the original pose. Introduce a world grid in slice 3 when bounds are needed, then add shared scents in slice 4.
+9. **Domain model:** In robotics, a position and orientation together form a **pose**. `Position` and `Pose` are immutable value objects. A `Robot` is constructed with its starting pose; `Simulate(commands, grid)` returns an immutable `SimulationReport` with its `EndPose`. Journey state is local to each call; repeating a simulation starts from the original pose. The grid supplies inclusive bounds; shared scents are introduced in slice 4.
 
 10. **Globalisation:** Produced messages, including errors, are not globalised or localised; they are written in English for this exercise.
 11. **Future instructions:** Use a `RobotCommand` enum and a switch in `Robot.Simulate`. Add command behaviours as needed; strategies and factories are deferred until a concrete requirement justifies them.
+
+12. **Boundary loss:** `Grid.Contains(position)` checks the inclusive rectangle from `(0, 0)` to its upper-right coordinate. `Robot.Simulate(commands, grid)` checks each resulting position before applying it. Leaving the grid immediately returns a report with `IsLost = true` and the last valid pose; the CLI appends `LOST`. Grid bounds and starting poses are assumed valid until the validation slice.
 
 ### Scope
 
@@ -61,9 +63,9 @@ dotnet test src/TDL.MartianRobots.slnx
 dotnet run --project src/TDL.MartianRobots.Cli
 ```
 
-Slice 2 supports all four starting orientations and left, right, and forward commands using hard-coded structured data. The CLI runs the first sample journey: starting at `1 1 E`, it executes `RFRFRFRF` and prints `1 1 E`. Turns change orientation without changing position; forward moves one grid point in the current direction. Each simulation starts from the robot's original pose.
+Slice 3 supports full navigation and boundary loss using hard-coded structured data. The CLI runs the second sample journey on a `5 3` grid: starting at `3 2 N`, it executes `FRRFLLFFRRFLL` and prints `3 3 N LOST`. Leaving the grid stops execution and preserves the last valid pose. Each simulation starts from the robot's original pose, including after a previous loss.
 
-Models assume valid data and perform no runtime validation. Grid bounds, loss, scents, text parsing, and validation remain for later slices.
+Models assume valid data and perform no runtime validation. Multiple robots, shared scents, text parsing, and validation remain for later slices.
 
 ### AI usage
 

@@ -14,13 +14,14 @@ public class When_A_Bot_Simulates_Turning
     [InlineData(Orientation.East, RobotCommand.Right, Orientation.South)]
     [InlineData(Orientation.South, RobotCommand.Right, Orientation.West)]
     [InlineData(Orientation.West, RobotCommand.Right, Orientation.North)]
-    public void Then_Orientation_Rotates_Ninety_Degrees(Orientation startingOrientation, RobotCommand command, Orientation expected)
+    public void Then_Orientation_Rotates_Ninety_Degrees(
+        Orientation startingOrientation, RobotCommand command, Orientation expected)
     {
         // Arrange
         var sut = new Robot(new Pose(new Position(2, 2), startingOrientation));
 
         // Act
-        var report = sut.Simulate([command]);
+        var report = sut.Simulate([command], new Grid(new Position(5, 3)));
 
         // Assert
         report.EndPose.Orientation.ShouldBe(expected);
@@ -42,7 +43,7 @@ public class When_A_Bot_Simulates_Turning
         var sut = new Robot(new Pose(startingPosition, orientation));
 
         // Act
-        var report = sut.Simulate([command]);
+        var report = sut.Simulate([command], new Grid(new Position(5, 3)));
 
         // Assert
         report.EndPose.Position.ShouldBe(startingPosition);
