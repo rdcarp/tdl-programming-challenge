@@ -10,7 +10,7 @@ The grid's lower-left corner is `(0, 0)`, and the input specifies its inclusive 
 - `R`: turn right 90 degrees without moving.
 - `F`: move forward one grid point in the current direction. North increases the y-coordinate.
 
-If a robot moves beyond the grid, it is lost and stops executing instructions. It leaves a scent at its last valid coordinate. Later robots ignore any instruction that would take them off the grid from a scented coordinate and continue with their remaining instructions.
+If a robot moves beyond the grid, it is lost and stops executing instructions. It leaves a scent at its last valid position and orientation, marking the edge it crossed. Later robots ignore any instruction that would take them off the grid from that same position and orientation and continue with their remaining instructions.
 
 Robots are processed sequentially, sharing scents across the simulation. For each robot, the program outputs its final coordinates and orientation, followed by `LOST` if it fell off the grid. A lost robot's reported position is its last valid position.
 
@@ -33,12 +33,15 @@ Robots are processed sequentially, sharing scents across the simulation. For eac
 6. **Test-driven development:** Develop application functionality through red-green-refactor: write a failing behaviour test, implement enough to pass, then refactor with tests passing.
 7. **Testing tools:** Use xUnit, Shouldly assertions, and NSubstitute for test doubles where dependencies need substitution. These are familiar tools that minimise overhead within the exercise's time limit.
 8. **Test structure:** Use `Given_A_{SUT}/When_{Specific_Action}.cs` with a matching class name and `Then_{Expected_Assertion}` methods, capitalising each word and separating words with underscores. Use Arrange / Act / Assert; shared setup may live in the constructor with an `_sut` field, while each test performs its own action and checks one focused outcome with minimal assertions.
-9. **Domain model:** In robotics, a position and orientation together form a **pose**. `Position` and `Pose` are immutable value objects. A `Robot` is constructed with its starting pose; `Simulate(commands, grid)` returns an immutable `SimulationReport` with its `EndPose`. Journey state is local to each call; repeating a simulation starts from the original pose. The grid supplies inclusive bounds; shared scents are introduced in slice 4.
+9. **Domain model:** In robotics, a position and orientation together form a **pose**. `Position` and `Pose` are immutable value objects. A `Robot` is constructed with its starting pose; `Simulate(commands, grid)` returns an immutable `SimulationReport` with its `EndPose`. Simulation state is local to each call; repeating a simulation starts from the original pose. The grid supplies inclusive bounds and shared scents.
 
 10. **Globalisation:** Produced messages, including errors, are not globalised or localised; they are written in English for this exercise.
 11. **Future instructions:** Use a `RobotCommand` enum and a switch in `Robot.Simulate`. Add command behaviours as needed; strategies and factories are deferred until a concrete requirement justifies them.
 
-12. **Boundary loss:** `Grid.Contains(position)` checks the inclusive rectangle from `(0, 0)` to its upper-right coordinate. `Robot.Simulate(commands, grid)` checks each resulting position before applying it. Leaving the grid immediately returns a report with `IsLost = true` and the last valid pose; the CLI appends `LOST`. Grid bounds and starting poses are assumed valid until the validation slice.
+12. **Boundary loss:** `Grid.Contains(position)` checks the inclusive rectangle from `(0, 0)` to its upper-right coordinate. `Robot.Simulate(commands, grid)` checks each resulting position before applying it. Leaving the grid from an unscented pose immediately returns a report with `IsLost = true` and the last valid pose; the CLI appends `LOST`. Grid bounds and starting poses are assumed valid until the validation slice.
+
+13. **Shared scents:** An immutable `GridTileEdge` value object identifies a boundary crossing by position and orientation. The grid stores scented edges in a `HashSet<GridTileEdge>`; `Pose` remains a description of a robot's positioning. A scent prevents only an off-grid move across that same edge. At a corner, a scent facing north does not protect an eastward departure. Turns and safe moves still execute, including northward movement alongside a scented east edge. Reusing a grid preserves its scents, while using a new grid starts without scents.
+14. **Sequential simulation:** `RobotCommandList` pairs a starting pose with structured commands. `Simulation.Run` creates a fresh grid for each collection, executes command lists in order using that shared grid, and returns an ordered read-only collection of reports. The CLI supplies the hard-coded command lists and formats the reports.
 
 ### Scope
 
@@ -56,30 +59,38 @@ dotnet build src/TDL.MartianRobots.slnx
 
 The solution contains the application class library, a separate CLI, and separate application and CLI test projects using xUnit and Shouldly. NSubstitute is available for future dependency doubles; the current domain tests use real objects.
 
-Run the tests and the hard-coded journey from the repository root:
+Run the tests and the hard-coded command lists from the repository root:
 
 ```shell
 dotnet test src/TDL.MartianRobots.slnx
 dotnet run --project src/TDL.MartianRobots.Cli
 ```
 
-Slice 3 supports full navigation and boundary loss using hard-coded structured data. The CLI runs the second sample journey on a `5 3` grid: starting at `3 2 N`, it executes `FRRFLLFFRRFLL` and prints `3 3 N LOST`. Leaving the grid stops execution and preserves the last valid pose. Each simulation starts from the robot's original pose, including after a previous loss.
+Slice 4 supports full navigation, boundary loss, and multiple robots with shared scents using hard-coded structured data. The CLI runs all three sample command lists sequentially on a `5 3` grid. The second robot leaves a scent that protects the third robot, producing:
 
-Models assume valid data and perform no runtime validation. Multiple robots, shared scents, text parsing, and validation remain for later slices.
+```text
+1 1 E
+3 3 N LOST
+2 3 S
+```
+
+Models assume valid data and perform no runtime validation. Text parsing and validation remain for later slices.
 
 ### AI usage
 
-AI assisted with planning, documentation, project setup, and the first two slices' implementation and tests. The developer selected the technology, architecture, and delivery order. Slice 2 verification included observing failing direction, turn, and sample-journey tests before implementation, then passing all 35 tests and checking the CLI output `1 1 E`. Human review and merging remain required.
+AI assisted with planning, documentation, project setup, and the first two slices' implementation and tests. The developer selected the technology, architecture, and delivery order. Slice 2 verification included observing failing direction, turn, and sample command tests before implementation, then passing all 35 tests and checking the CLI output `1 1 E`. Human review and merging remain required.
+
+For slice 4, AI assisted with shared scents, sequential simulation, tests, and documentation. Verification included observing failing scent and orchestration tests before implementation, plus a failing regression test for the clarified directional scent requirement. The updated implementation builds with no warnings, passes all 62 tests, and produces the three expected CLI output lines.
 
 ## Delivery plan
 
 Development and testing conventions are defined in [AGENTS.md](AGENTS.md).
 
-Start with a runnable journey using hard-coded structured data and expand its behaviour in tested slices. Slices 1-4 require no input parsing; text input is introduced in slice 5, followed by complete validation coverage.
+Start with a runnable command list using hard-coded structured data and expand its behaviour in tested slices. Slices 1-4 require no input parsing; text input is introduced in slice 5, followed by complete validation coverage.
 
 | Slice | Functionality delivered | Example acceptance check |
 |---|---|---|
-| **1. One safe journey** | Use hard-coded grid bounds, one robot, and forward commands; move north within bounds and print its final position, with no input parsing | A hard-coded `5 3` grid and robot at `1 1 N` executing two forward commands produces `1 3 N` |
+| **1. One safe command list** | Use hard-coded grid bounds, one robot, and forward commands; move north within bounds and print its final position, with no input parsing | A hard-coded `5 3` grid and robot at `1 1 N` executing two forward commands produces `1 3 N` |
 | **2. Full navigation** | Support all starting orientations and `L`, `R`, `F` | The sample's first robot produces `1 1 E` |
 | **3. Boundary loss** | Detect leaving the grid, stop that robot, and output its last valid position with `LOST` | The sample's second robot produces `3 3 N LOST` |
 | **4. Multiple robots and scents** | Execute a hard-coded collection of robots sequentially and share scents | The complete sample, represented as structured data, produces all three expected output lines |

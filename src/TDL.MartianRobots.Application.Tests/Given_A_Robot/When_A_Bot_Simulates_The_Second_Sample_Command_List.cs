@@ -3,7 +3,7 @@ using TDL.MartianRobots.Application.Domain;
 
 namespace TDL.MartianRobots.Application.Tests.Given_A_Robot;
 
-public class When_A_Bot_Simulates_The_Second_Sample_Journey
+public class When_A_Bot_Simulates_The_Second_Sample_Command_List
 {
     private readonly Robot _sut = new(new Pose(new Position(3, 2), Orientation.North));
     private readonly Grid _grid = new(new Position(5, 3));

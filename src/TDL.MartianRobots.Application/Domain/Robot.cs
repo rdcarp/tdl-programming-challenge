@@ -5,6 +5,7 @@ public sealed class Robot(Pose startingPose)
     public SimulationReport Simulate(IEnumerable<RobotCommand> commands, Grid grid)
     {
         var pose = startingPose;
+        var isLost = false;
         foreach (var command in commands)
         {
             var nextPose = command switch
@@ -17,13 +18,21 @@ public sealed class Robot(Pose startingPose)
 
             if (!grid.Contains(nextPose.Position))
             {
-                return new SimulationReport(pose, true);
+                var edge = new GridTileEdge(pose.Position, pose.Orientation);
+                if (grid.HasScent(edge))
+                {
+                    continue;
+                }
+
+                grid.LeaveScent(edge);
+                isLost = true;
+                break;
             }
 
             pose = nextPose;
         }
 
-        return new SimulationReport(pose, false);
+        return new SimulationReport(pose, isLost);
     }
 
     private static Position MoveForward(Pose pose) => pose.Orientation switch
