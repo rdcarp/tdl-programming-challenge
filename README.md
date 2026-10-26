@@ -32,11 +32,40 @@ Robots are processed sequentially, sharing scents across the simulation. For eac
 5. **CLI boundary:** The CLI references the application project and handles console input, output formatting, and error rendering. The application must not depend on the CLI or console APIs.
 6. **Test-driven development:** Develop application functionality through red-green-refactor: write a failing behaviour test, implement enough to pass, then refactor with tests passing.
 7. **Testing tools:** Use xUnit, Shouldly assertions, and NSubstitute for test doubles where dependencies need substitution. These are familiar tools that minimise overhead within the exercise's time limit.
-8. **Test structure:** Organise tests into Given / When / Then sections, with each test checking one focused behaviour and using only the assertions necessary to establish it.
+8. **Test structure:** Use `Given_A_{SUT}/When_{Specific_Action}.cs` with a matching class name and `Then_{Expected_Assertion}` methods, capitalising each word and separating words with underscores. Use Arrange / Act / Assert; shared setup may live in the constructor with an `_sut` field, while each test performs its own action and checks one focused outcome with minimal assertions.
+9. **Domain model:** In robotics, a position and orientation together form a **pose**. `Position` and `Pose` are immutable value objects. A `Robot` is constructed with its starting pose; `Simulate(commands)` returns an immutable `SimulationReport` with its `EndPose`. Journey state is local to each call; repeating a simulation starts from the original pose. Introduce a world grid in slice 3 when bounds are needed, then add shared scents in slice 4.
+
+10. **Globalisation:** Produced messages, including errors, are not globalised or localised; they are written in English for this exercise.
+11. **Future instructions:** Use a `RobotCommand` enum and a switch in `Robot.Simulate`. Add command behaviours as needed; strategies and factories are deferred until a concrete requirement justifies them.
 
 ### Scope
 
 The submission is a runnable program with unit tests and documented setup and technical choices. A user interface, web application, database, and deployment pipeline are outside the scope of the exercise.
+
+## Development setup
+
+Install the .NET 10 SDK and open `src/TDL.MartianRobots.slnx` in your IDE.
+
+From the repository root, build the solution with:
+
+```shell
+dotnet build src/TDL.MartianRobots.slnx
+```
+
+The solution contains the application class library, a separate CLI, and separate application and CLI test projects using xUnit and Shouldly. NSubstitute is available for future dependency doubles; the current domain tests use real objects.
+
+Run the tests and the hard-coded journey from the repository root:
+
+```shell
+dotnet test src/TDL.MartianRobots.slnx
+dotnet run --project src/TDL.MartianRobots.Cli
+```
+
+Slice 1 currently supports safe northward forward movement only, using hard-coded structured data, and the CLI prints `1 3 N`. Models assume valid data and perform no runtime validation. Command handling assumes forward movement facing north. Text parsing, validation, turns, other orientations, loss, and scents remain for later slices.
+
+### AI usage
+
+AI assisted with planning, documentation, project setup, and the first slice's implementation and tests. The developer selected the technology, architecture, and delivery order. Verification included observing the initial 15 failing tests, then passing them after implementation; human review and merging remain required.
 
 ## Delivery plan
 
